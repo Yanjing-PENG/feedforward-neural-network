@@ -1,22 +1,14 @@
 """
-     CSIT6000G/MSBD5012 Programming Assignment 2
-         Due Date: Oct 25 (CSIT), Oct 26 (MSBD)
-To be submitted via canvas, just as Programming Assignment 1
 
 This program builds a two-layer neural network for the Iris dataset.
 The first layer is a relu layer with 10 units, and the second one is 
 a softmax layer. The network structure is specified in the "train" function.
 
 The parameters are learned using SGD.  The forward propagation and backward 
-propagation are carried out in the "compute_neural_net_loss" function.  The codes
-for the propagations are deleted.  Your task is to fill in the missing codes.
+propagation are carried out in the "compute_neural_net_loss" function.
 
 """
 
-# In this exercise, we are going to work with a two-layer neural network
-# first layer is a relu layer with 10 units, and second one is a softmax layer.
-# randomly initialize parameters
-    
 
 import numpy as np
 import os, sys
@@ -59,14 +51,7 @@ def compute_neural_net_loss(params, X, y, reg=0.0):
     loss = 0.0
     grads = {}
 
-    #############################################################################
-    # TODO: Finish the forward pass, and compute the loss. This should include  #
-    # both the data loss and L2 regularization for W1 and W2. Store the result  #
-    # in the variable loss, which should be a scalar. Use the Softmax           #
-    # classifier loss. So that your results match ours, multiply the            #
-    # regularization loss by 0.5                                                #
-    #############################################################################
-
+    # forward propagation
     relu = lambda x : x * (x > 0)
     z1 = X.dot(W1) + b1
     u1 = np.vectorize(relu)(z1)
@@ -75,16 +60,7 @@ def compute_neural_net_loss(params, X, y, reg=0.0):
     NLL = - (np.vectorize(math.log)((np.array([u2[i][y[i]] / u2[i].sum() for i in range(N)])))).sum()
     loss = NLL / N + 0.5 * reg * ((W1 ** 2).sum() + (W2 ** 2).sum())
 
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
-
-    #############################################################################
-    # TODO: Compute the backward pass, computing the derivatives of the weights #
-    # and biases. Store the results in the grads dictionary. For example,       #
-    # grads['W1'] should store the gradient on W1, and be a matrix of same size #
-    #############################################################################
-
+    # backward propagation
     d_relu = lambda x: 1 * (x >= 0)
     delta2 = np.zeros(z2.shape)
     for i in range(delta2.shape[0]):
@@ -116,9 +92,6 @@ def compute_neural_net_loss(params, X, y, reg=0.0):
         db1 += delta1[i]
     db1 = db1 / N
 
-    #############################################################################
-    #                          END OF YOUR CODE                                 #
-    #############################################################################
     grads['W1']=dW1
     grads['W2']=dW2
     grads['b1']=db1
@@ -169,10 +142,7 @@ def train(X, y, Xtest, ytest, learning_rate=1e-3, reg=1e-5, epochs=100, batch_si
     num_train, dim = X.shape
     num_classes = np.max(y) + 1 # assume y takes values 0...K-1 where K is number of classes
     num_iters_per_epoch = int(math.floor(1.0*num_train/batch_size))
-    
-    # In this exercise, we are going to work with a two-layer neural network
-    # first layer is a relu layer with 10 units, and second one is a softmax layer.
-    # randomly initialize parameters
+
     params = {}
     std = 0.001
     params['W1'] = std * np.random.randn(dim, 10)
